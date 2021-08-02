@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { AuthContext } from "../context/processors";
 import {
   StyleSheet,
   View,
@@ -34,22 +35,11 @@ RegisterSchema = Yup.object({
 });
 
 export default function SignUp({ navigation }) {
-  const reg_url = "http://192.168.43.137:8000/auth/users/";
   const email_ref = useRef();
   const password_ref = useRef();
   const confirm_password_ref = useRef();
-  const register = ({ email, username, password }) => {
-    console.log(
-      `Email is ${email}, Username is ${username}, Password is ${password}`
-    );
-    axios
-      .post(reg_url, { email: email, username: username, password: password })
-      .then((res) => navigation.push("SignIn"))
-      .catch((err) => {
-        Alert.alert("Huh!", "Something");
-        console.log(err);
-      });
-  };
+  const { SignUp } = React.useContext(AuthContext);
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={GlobalStyles.authPageContainer}>
@@ -68,7 +58,7 @@ export default function SignUp({ navigation }) {
               { password: "" },
               { confirm_password: "" })
             }
-            onSubmit={(value) => register(value)}
+            onSubmit={(value) => SignUp(value)}
           >
             {({
               handleChange,
@@ -100,7 +90,9 @@ export default function SignUp({ navigation }) {
                   </Text>
                 ) : null}
                 {/* End Username Field */}
-
+                <Text style={GlobalStyles.helperText}>
+                  Must be at least 4 characters
+                </Text>
                 {/* Email Field */}
                 <View style={GlobalStyles.control}>
                   <AntDesign name="mail" size={24} color={color.dark} />
@@ -146,6 +138,15 @@ export default function SignUp({ navigation }) {
                     {touched.password && errors.password}
                   </Text>
                 ) : null}
+                <Text style={GlobalStyles.helperText}>
+                  Password must not contain the username!
+                </Text>
+                <Text style={GlobalStyles.helperText}>
+                  Must be at least 8 characters
+                </Text>
+                <Text style={GlobalStyles.helperText}>
+                  Must contain a lowercase, uppercase letter and a number
+                </Text>
                 {/* End Password Field */}
 
                 {/* Confirm Password */}
@@ -168,6 +169,9 @@ export default function SignUp({ navigation }) {
                     {touched.confirm_password && errors.confirm_password}
                   </Text>
                 ) : null}
+                <Text style={GlobalStyles.helperText}>
+                  Must be same with password
+                </Text>
                 {/* End Confirm Password Field */}
 
                 {/* Button Containers */}

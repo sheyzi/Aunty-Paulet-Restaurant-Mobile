@@ -8,14 +8,12 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import { AuthContext } from "../context/processors";
 import { color, GlobalStyles } from "../styles/global";
 import { Formik } from "formik";
 import { AntDesign } from "@expo/vector-icons";
 import * as Yup from "yup";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 
 const LoginSchema = Yup.object({
   username: Yup.string().required("Username cannot be empty"),
@@ -23,29 +21,8 @@ const LoginSchema = Yup.object({
 });
 
 export default function SignIn({ navigation }) {
-  const login_url = "http://192.168.43.137:8000/auth/token/login/";
+  const { SignIn } = React.useContext(AuthContext);
   const password_ref = useRef();
-  const storeData = async (value) => {
-    try {
-      await AsyncStorage.setItem("token", value);
-    } catch (e) {
-      // saving error
-      Alert.alert("Huh", "Something went wrong please try again!");
-    }
-  };
-  const login = ({ username, password }) => {
-    console.log(`Username is ${username}, Password is ${password}`);
-    axios
-      .post(login_url, { username: username, password: password })
-      .then((res) => {
-        console.log(res.data.auth_token);
-        storeData(res.data.auth_token);
-      })
-      .catch((err) => {
-        console.log(err);
-        Alert.alert("Sorry!!", "Invalid Username or Password");
-      });
-  };
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={GlobalStyles.authPageContainer}>
@@ -59,7 +36,7 @@ export default function SignIn({ navigation }) {
           <Formik
             validationSchema={LoginSchema}
             initialValues={({ username: "" }, { password: "" })}
-            onSubmit={(value) => login(value)}
+            onSubmit={(value) => SignIn(value)}
           >
             {({
               handleChange,

@@ -14,13 +14,15 @@ export const color = {
 export const GlobalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: color.white,
-    padding: 20,
+    backgroundColor: color.light,
+    padding: 10,
   },
-
+  CardStyle: { padding: 5 },
   title: {
-    fontSize: 18,
-    paddingVertical: 8,
+    fontSize: 24,
+    paddingVertical: 5,
+    fontFamily: "nunito-bold",
+    // textAlign: "center",
   },
   errorText: {
     textAlign: "center",
@@ -71,5 +73,10 @@ export const GlobalStyles = StyleSheet.create({
     fontFamily: "nunito-regular",
     borderRadius: 3,
     height: 50,
+  },
+  helperText: {
+    color: color.light2,
+    // paddingVertical: 2,
+    fontSize: 11,
   },
 });

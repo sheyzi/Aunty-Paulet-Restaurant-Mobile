@@ -3183,6 +3183,11 @@ expo-modules-core@~0.2.0:
   resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.2.0.tgz#68e5b6e53d0afbf8d131578831aed657589a2d42"
   integrity sha512-inpfZ5X/BaTtbj2wG9PA9AC0MN8VyId6KSRlVuEg7+ziurHBy/kKDFxpOddUokhwiln2uhoYPSStJjR/tKypdw==
 
+expo-secure-store@~10.2.0:
+  version "10.2.0"
+  resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-10.2.0.tgz#561dfea4d6b4d05a738643d80a15403ebe0e515d"
+  integrity sha512-yNahMY3qzEotAYdsE02ps4yGfDay2twasHfsI/7gJB9SrwXYFx5bJuCDk8uTo8jsm6psvDjO+9VMM2DSPHik2A==
+
 expo-splash-screen@~0.11.2:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.11.2.tgz#70c69052981cc982d12030f2a1df5b35af7ee752"
@@ -5385,6 +5390,11 @@ react-native-gesture-handler@~1.10.2:
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
     prop-types "^15.7.2"
+
+react-native-imaged-carousel-card@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-imaged-carousel-card/-/react-native-imaged-carousel-card-0.1.1.tgz#c9188edc9180168caf62e4fa7e4f7654c44d175e"
+  integrity sha512-EbPGQslisB2FJVW7TfEQnUda8QcCmB+dy1InQ63eiU1UYiuB1hWwc17pSkcmzitCeWksm9Fh/1G/7XYP+HFeVQ==
 
 react-native-iphone-x-helper@^1.3.0:
   version "1.3.1"
