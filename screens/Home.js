@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -191,6 +192,7 @@ function HomePage({ navigation }) {
           </ScrollView>
           {/* End Recommended Product */}
         </ScrollView>
+        <StatusBar backgroundColor={color.primary} style="light" />
       </View>
     );
   }
@@ -198,7 +200,17 @@ function HomePage({ navigation }) {
 
 export default function Home() {
   return (
-    <StackNav.Navigator>
+    <StackNav.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: color.primary,
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontFamily: "nunito-bold",
+        },
+      }}
+    >
       <StackNav.Screen
         name="Home"
         component={HomePage}
@@ -207,7 +219,9 @@ export default function Home() {
       <StackNav.Screen
         name="ProductDetails"
         component={ProductDetails}
-        options={({ route }) => ({ title: route.params.name })}
+        options={({ route }) => ({
+          title: route.params.name,
+        })}
       />
       <StackNav.Screen
         name="CategoryDetails"

@@ -17,7 +17,7 @@ export const GlobalStyles = StyleSheet.create({
     backgroundColor: color.light,
     padding: 10,
   },
-  CardStyle: { padding: 5 },
+  CardStyle: { padding: 5, alignSelf: "center" },
   title: {
     fontSize: 24,
     paddingVertical: 5,

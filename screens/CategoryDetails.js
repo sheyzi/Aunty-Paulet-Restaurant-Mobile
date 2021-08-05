@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import axios from "axios";
 import React from "react";
 import {
@@ -10,7 +11,7 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import ImagedCarouselCard from "react-native-imaged-carousel-card";
 
-import { GlobalStyles } from "../styles/global";
+import { GlobalStyles, color } from "../styles/global";
 import Loading from "./Loading";
 const WIDTH = Dimensions.get("window").width;
 
@@ -53,6 +54,7 @@ export default function CategoryDetails({ navigation, route }) {
         <FlatList
           data={categoryDetails.products}
           keyExtractor={(item) => item.id.toString()}
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             return (
@@ -76,6 +78,7 @@ export default function CategoryDetails({ navigation, route }) {
             );
           }}
         />
+        <StatusBar backgroundColor={color.primary} style="light" />
       </View>
     );
   }

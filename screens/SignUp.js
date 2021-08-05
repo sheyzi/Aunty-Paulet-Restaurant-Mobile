@@ -17,7 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as Yup from "yup";
 import axios from "axios";
 
-RegisterSchema = Yup.object({
+const RegisterSchema = Yup.object({
   email: Yup.string().required("Email is required").email("Not a valid email"),
   username: Yup.string()
     .required("Username is required")

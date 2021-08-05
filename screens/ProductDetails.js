@@ -16,6 +16,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { color, GlobalStyles } from "../styles/global";
 import Loading from "./Loading";
+import { StatusBar } from "expo-status-bar";
+import { AuthContext } from "../context/processors";
 
 const WIDTH = Dimensions.get("window").width;
 
@@ -23,6 +25,8 @@ export default function ProductDetails({ navigation, route }) {
   const { name, slug, id } = route.params;
   const [productDetail, setProductDetail] = React.useState(null);
   const [quantity, setQuantity] = React.useState("1");
+
+  const { addToCart, getCart } = React.useContext(AuthContext);
 
   const productUrl = "http://192.168.43.137:8000/api/v1/products" + slug;
 
@@ -55,6 +59,8 @@ export default function ProductDetails({ navigation, route }) {
     }
   }
 
+  // function handleAddToCart
+
   if (!productDetail) {
     return <Loading />;
   } else {
@@ -75,7 +81,10 @@ export default function ProductDetails({ navigation, route }) {
               style={styles.quantity}
               onChangeText={(val) => handleQuantityChange(val)}
             />
-            <TouchableOpacity style={styles.addToCart}>
+            <TouchableOpacity
+              style={styles.addToCart}
+              onPress={() => addToCart(productDetail, quantity)}
+            >
               <MaterialIcons
                 name="add-shopping-cart"
                 size={24}
@@ -91,6 +100,7 @@ export default function ProductDetails({ navigation, route }) {
             <Text style={styles.description}>{productDetail.description}</Text>
           </View>
         </View>
+        <StatusBar backgroundColor={color.primary} style="light" />
       </View>
     );
   }

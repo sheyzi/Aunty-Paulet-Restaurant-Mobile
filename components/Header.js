@@ -7,9 +7,11 @@ import {
   Text,
   Dimensions,
   TextInput,
+  StatusBar,
 } from "react-native";
 import { color, GlobalStyles } from "../styles/global";
 import { MaterialIcons } from "@expo/vector-icons";
+// import { StatusBar } from "expo-status-bar";
 
 export default function Header() {
   const [query, setQuery] = React.useState("");
@@ -47,7 +49,7 @@ export default function Header() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: color.white,
+    backgroundColor: color.primary,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     shadowColor: "#000",
@@ -55,10 +57,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 5,
+    marginTop: StatusBar.currentHeight,
   },
   control: {
     backgroundColor: color.white,
-    borderRadius: 3,
+    borderRadius: 30,
     paddingHorizontal: 5,
     alignItems: "center",
     flexDirection: "row",
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
     fontFamily: "nunito-regular",
-    borderRadius: 3,
+    borderRadius: 30,
     height: 50,
   },
 });
