@@ -7,20 +7,21 @@ import {
   View,
   Alert,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import ImagedCarouselCard from "react-native-imaged-carousel-card";
-import * as Sentry from "sentry-expo";
 
 import { GlobalStyles, color } from "../styles/global";
 import Loading from "./Loading";
 const WIDTH = Dimensions.get("window").width;
+import * as Sentry from "sentry-expo";
 
-export default function CategoryDetails({ navigation, route }) {
-  const { name, slug, id } = route.params;
-  const [categoryDetails, setCategoryDetails] = React.useState(null);
+export default function SearchDetails({ navigation, route }) {
+  const { name, query, id } = route.params;
+  const [searchProducts, setSearchProducts] = React.useState(null);
 
-  const categoryUrl = `/categories/${slug}/products`;
+  const searchUrl = `/products/search?q=${query}`;
 
   const showProduct = (name, slug, id) => {
     navigation.navigate("ProductDetails", {
@@ -29,12 +30,12 @@ export default function CategoryDetails({ navigation, route }) {
       id: id,
     });
   };
-  const getCategory = () => {
+  const getSearch = () => {
     axios
-      .get(categoryUrl)
+      .get(searchUrl)
       .then((res) => {
         console.log(res.data);
-        setCategoryDetails(res.data);
+        setSearchProducts(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -55,16 +56,16 @@ export default function CategoryDetails({ navigation, route }) {
   };
 
   React.useEffect(() => {
-    getCategory();
+    getSearch();
   }, []);
 
-  if (!categoryDetails) {
+  if (!searchProducts) {
     return <Loading />;
   } else {
-    return (
+    return searchProducts.length ? (
       <View style={GlobalStyles.container}>
         <FlatList
-          data={categoryDetails}
+          data={searchProducts}
           keyExtractor={(item) => item.id.toString()}
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
@@ -88,6 +89,11 @@ export default function CategoryDetails({ navigation, route }) {
             );
           }}
         />
+        <StatusBar backgroundColor={color.primary} style="light" />
+      </View>
+    ) : (
+      <View style={GlobalStyles.container}>
+        <Text style={GlobalStyles.title}>No result found for {query}</Text>
         <StatusBar backgroundColor={color.primary} style="light" />
       </View>
     );

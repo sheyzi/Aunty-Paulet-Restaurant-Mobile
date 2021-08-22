@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../config/axiosConfig";
 import react from "react";
 import React from "react";
 import {
@@ -11,8 +11,10 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  SafeAreaView,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as Sentry from "sentry-expo";
 
 import { color, GlobalStyles } from "../styles/global";
 import Loading from "./Loading";
@@ -22,13 +24,13 @@ import { AuthContext } from "../context/processors";
 const WIDTH = Dimensions.get("window").width;
 
 export default function ProductDetails({ navigation, route }) {
-  const { name, slug, id } = route.params;
+  const { name, slug } = route.params;
   const [productDetail, setProductDetail] = React.useState(null);
   const [quantity, setQuantity] = React.useState("1");
 
   const { addToCart, getCart } = React.useContext(AuthContext);
 
-  const productUrl = "http://192.168.43.137:8000/api/v1/products" + slug;
+  const productUrl = "/products/" + slug;
 
   const getProduct = () => {
     axios
@@ -38,10 +40,19 @@ export default function ProductDetails({ navigation, route }) {
       })
       .catch((err) => {
         console.log(err);
-        Alert.alert(
-          "Huh",
-          "Network issue!! Make sure you have data and restart the app"
-        );
+        Sentry.Native.captureException(err);
+
+        Toast.show({
+          type: "error",
+          position: "top",
+          text1: "Error",
+          text2:
+            "Something went wrong please try reopening the app and check your internet connection",
+          visibilityTime: 4000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
       });
   };
 
@@ -65,8 +76,8 @@ export default function ProductDetails({ navigation, route }) {
     return <Loading />;
   } else {
     return (
-      <View style={styles.container}>
-        <Image source={{ uri: productDetail.get_image }} style={styles.image} />
+      <SafeAreaView style={styles.container}>
+        <Image source={{ uri: productDetail.image_url }} style={styles.image} />
 
         <View style={styles.textContainer}>
           <View style={styles.productDetail}>
@@ -101,7 +112,7 @@ export default function ProductDetails({ navigation, route }) {
           </View>
         </View>
         <StatusBar backgroundColor={color.primary} style="light" />
-      </View>
+      </SafeAreaView>
     );
   }
 }

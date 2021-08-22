@@ -16,16 +16,17 @@ const CartNav = createStackNavigator();
 import Loading from "./Loading";
 import { AntDesign } from "@expo/vector-icons";
 
-function CartPage({ navigation }) {
+function CartPage({ navigation, route }) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [cart, setCart] = React.useState({ items: [] });
-  const { getCart, incrementCart, decrementCart, removeFromCart } =
+  const [uniqueValue, setUniqueValue] = React.useState(1);
+  const { getCart, incrementCart, decrementCart, resetCart, removeFromCart } =
     React.useContext(AuthContext);
-
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 300);
+    setUniqueValue(uniqueValue + 1);
     getCart().then((value) => setCart(value));
   }, []);
 
@@ -53,7 +54,6 @@ function CartPage({ navigation }) {
 
     currentCart.items.forEach((item, index) => {
       if (item_id == item.id) {
-        console.log("Should be removed");
         currentCart.items = currentCart.items.filter((a) => {
           return a.id !== item_id;
         });
@@ -89,7 +89,7 @@ function CartPage({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} key={uniqueValue}>
       {cart.items.length ? (
         <View style={styles.container}>
           <FlatList
@@ -101,7 +101,7 @@ function CartPage({ navigation }) {
                 <View style={styles.cartCard}>
                   <View style={styles.cartCardDetails}>
                     <Image
-                      source={{ uri: item.get_image }}
+                      source={{ uri: item.image_url }}
                       style={styles.cartImage}
                     />
                     <View style={styles.cardProductDetailsContainer}>
@@ -145,7 +145,9 @@ function CartPage({ navigation }) {
             }}
           />
           <View style={styles.bottomContainer}>
-            <Text style={styles.title}>Total Price: ₦{totalCartPrice()}</Text>
+            <Text style={styles.title}>
+              Total Price: ₦{totalCartPrice()} + ₦300 (shipping)
+            </Text>
             <TouchableOpacity
               style={styles.checkoutButton}
               onPress={() => {
@@ -188,8 +190,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontFamily: "nunito-bold",
+    textAlign: "center",
   },
   noTitle: {
     fontSize: 24,
@@ -249,7 +252,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Cart() {
+export default function Cart({ navigation, route: { params } }) {
   // const { getCart } = React.useContext(AuthContext);
 
   return (
@@ -268,8 +271,13 @@ export default function Cart() {
         name="Cart"
         component={CartPage}
         // options={{ headerStyle: {false} }}
+        initialParams={params}
       />
-      <CartNav.Screen name="Checkout" component={Checkout} />
+      <CartNav.Screen
+        name="Checkout"
+        component={Checkout}
+        initialParams={params}
+      />
     </CartNav.Navigator>
   );
 }

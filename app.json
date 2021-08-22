@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Aunty Paulet Restaurant",
-    "slug": "AuntyPauletRestaurant",
+    "slug": "apfoods",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,12 +10,16 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "icon": "./assets/notif_icon.png",
+      "color": "#E15A11",
+      "androidMode": "default",
+      "androidCollapsedTitle": "n/a"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -23,10 +27,26 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.sheyzi_silver.apfoods",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "description": "No1 Food Delivery app in Lagos Nigeria",
+    "plugins": ["sentry-expo"],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "aunty-paulet-restaurant",
+            "project": "aunty-paulet-restaurant",
+            "authToken": "9b3af7ca60394068a125fb1636bd6650fdc510995eac44cfb2e070670750a9f2"
+          }
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,7 @@ import {
   TextInput,
   Dimensions,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { AuthContext } from "../context/processors";
@@ -14,6 +15,10 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
+import * as SecureStore from "expo-secure-store";
+import axios from "../config/axiosConfig";
+import * as Sentry from "sentry-expo";
 
 const AddressSchema = Yup.object({
   name: Yup.string()
@@ -24,10 +29,130 @@ const AddressSchema = Yup.object({
     .min(10, "Phone number can not be less than 10 characters")
     .max(11, "Phone number can not be greater than 11 characters"),
   streetAddress: Yup.string().required("Address is required"),
-  city: Yup.string().required("City is required"),
 });
-export default function Checkout() {
-  const { getCart } = React.useContext(AuthContext);
+export default function Checkout({ navigation, route, params }) {
+  const { getCart, resetCart } = React.useContext(AuthContext);
+  const [userToken, setUserToken] = React.useState(null);
+  const [cart, setCart] = React.useState({ items: [] });
+  const [userDetails, setUserDetails] = React.useState({});
+  const getUserData = (token) => {
+    let axiosConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get("/users/me", axiosConfig)
+      .then((res) => {
+        setUserDetails(res.data);
+      })
+      .catch((err) => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Error",
+          text2: err.response.data.detail,
+          visibilityTime: 4000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
+      });
+  };
+
+  async function getValueAsync() {
+    let result = await SecureStore.getItemAsync("userToken");
+    setUserToken(result);
+    getUserData(result);
+  }
+
+  React.useEffect(() => {
+    getCart().then((value) => setCart(value));
+    getValueAsync();
+  }, []);
+
+  const totalCartPrice = () => {
+    let sum = 0;
+    cart.items.forEach((item, index) => {
+      const itemTotalPrice = Number(item.price) * Number(item.quantity);
+      sum += itemTotalPrice;
+    });
+    sum = sum + 300;
+    return sum;
+  };
+
+  const checkOut = async ({ name, phone, streetAddress, city, state }) => {
+    console.log(city);
+    let order_details = {
+      receiver_name: name,
+      receiver_phone_number: phone,
+      receiver_street_address: streetAddress,
+      receiver_city: city,
+      receiver_state: state,
+
+      amount: totalCartPrice(),
+    };
+    let order_items = [];
+    cart.items.forEach((item, index) => {
+      var newItem = {
+        product_id: item.id,
+        price: item.price,
+        quantity: item.quantity.toString(),
+      };
+      order_items.push(newItem);
+    });
+
+    let data = {
+      order_details: order_details,
+      order_items: order_items,
+    };
+
+    let axiosConfig = {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    await axios
+      .post("/order", data, axiosConfig)
+      .then((res) => {
+        resetCart();
+        navigation.navigate("Menu");
+        Toast.show({
+          type: "success",
+          position: "bottom",
+          text1: "Order Successful",
+          text2: "Your food would be delivered as soon as possible",
+          visibilityTime: 4000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
+      })
+      .catch((err) => {
+        if (
+          err.response.data.detail ==
+          "Insufficient balance!! Please fund your account to complete your order!!"
+        ) {
+          navigation.navigate("Profile");
+        }
+
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Error",
+          text2: "err.response",
+          visibilityTime: 4000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
+
+        console.log(err.response);
+        Sentry.Native.captureException(err);
+      });
+  };
 
   const phoneRef = React.useRef();
   const streetRef = React.useRef();
@@ -43,10 +168,10 @@ export default function Checkout() {
           ({ name: "" },
           { phone: "" },
           { streetAddress: "" },
-          { city: "" },
+          { city: "Ikorodu" },
           { state: "Lagos" })
         }
-        onSubmit={(value) => console.log(value)}
+        onSubmit={(value) => checkOut(value)}
       >
         {({
           handleChange,
@@ -120,15 +245,14 @@ export default function Checkout() {
               <TextInput
                 placeholder="Enter Street Address"
                 blurOnSubmit={false}
-                returnKeyType="next"
+                returnKeyType="go"
                 importantForAutofill="auto"
                 value={values.streetAddress}
                 style={styles.input}
                 ref={streetRef}
                 onChangeText={handleChange("streetAddress")}
-                onSubmitEditing={() => city.current.focus()}
+                onSubmitEditing={handleSubmit}
                 onBlur={handleBlur("streetAddress")}
-                multiline={true}
               />
             </View>
             {errors.streetAddress && touched.streetAddress ? (
@@ -144,16 +268,12 @@ export default function Checkout() {
                 color={color.primary}
               />
               <TextInput
-                placeholder="Enter City"
-                onChangeText={handleChange("city")}
                 onBlur={handleBlur("city")}
                 blurOnSubmit={false}
-                returnKeyType="go"
-                onSubmitEditing={() => handleSubmit()}
-                importantForAutofill="auto"
                 ref={cityRef}
-                value={values.city}
+                value="Ikorodu"
                 style={styles.input}
+                editable={false}
               />
             </View>
             {errors.city && touched.city ? (
@@ -177,11 +297,23 @@ export default function Checkout() {
               />
             </View>
             <View style={styles.buttonContainer}>
-              <Button
-                color={color.primary}
-                onPress={handleSubmit}
-                title="Proceed to payment"
-              />
+              <Text style={styles.title}>
+                Account Balance: ₦{userDetails.balance}
+              </Text>
+              {userDetails.balance > totalCartPrice() ? (
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  style={GlobalStyles.buttonContainer}
+                >
+                  <Text style={GlobalStyles.button}>
+                    Proceed to Pay ₦{totalCartPrice()}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={GlobalStyles.buttonContainer}>
+                  <Text style={GlobalStyles.button}>Fund Account</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         )}

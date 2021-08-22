@@ -1,10 +1,10 @@
 import React from "react";
-import { ActivityIndicator, Image, View } from "react-native";
+import { ActivityIndicator, Image, View, StyleSheet } from "react-native";
 import { color, GlobalStyles } from "../styles/global";
 
 export default function SplashScreen() {
   return (
-    <View style={GlobalStyles.container}>
+    <View style={styles.container}>
       <View style={GlobalStyles.logoContainer}>
         <Image
           style={GlobalStyles.logo}
@@ -15,3 +15,11 @@ export default function SplashScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: color.white,
+    padding: 10,
+  },
+});

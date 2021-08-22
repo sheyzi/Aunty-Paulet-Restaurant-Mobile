@@ -13,12 +13,13 @@ import { color, GlobalStyles } from "../styles/global";
 import { MaterialIcons } from "@expo/vector-icons";
 // import { StatusBar } from "expo-status-bar";
 
-export default function Header() {
+export default function Header({ searchFunction }) {
   const [query, setQuery] = React.useState("");
   const [searchText, setSearchText] = React.useState("");
 
   const handleSubmit = () => {
     setQuery(searchText);
+    searchFunction(searchText);
     setSearchText("");
     console.log("Submitted");
     console.log(query);
